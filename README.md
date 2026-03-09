@@ -70,7 +70,14 @@ This is a production-ready WhatsApp AI chatbot dashboard built with Node.js, Exp
 ```
 
 ## Deployment
-1. Deploy the backend to a platform like **Railway**, **Render**, or **DigitalOcean**.
-2. Deploy the frontend to **Vercel** or **Netlify**.
-3. Ensure the backend URL is correctly set in the frontend environmental variables.
-4. Ensure the backend is reachable via HTTPS for the Meta Webhook to work.
+
+### Railway.app (Recommended)
+1.  **Multiple Services**: Since this is a monorepo, follow these steps in your Railway dashboard:
+    -   Click "Create New Project" -> "Deploy from GitHub Repo".
+    -   Once connected, Railway might attempt to build from the root and fail with an **"Error creating build plan"**.
+2.  **To Fix Build Errors**:
+    -   **For Backend Service**: Go to `Settings` -> `General` -> `Root Directory` and set it to `/backend`.
+    -   **For Frontend Service**: Go to `Settings` -> `General` -> `Root Directory` and set it to `/frontend`.
+3.  **Environment Variables**:
+    -   Ensure each service has its own `.env` values set in the Railway dashboard.
+4.  **Auto-Configuration**: This repository includes a `railway.json` file which helps Railway automatically detect the services. If you use the "Deploy from railway.json" option during project creation, this setup will be automated.
