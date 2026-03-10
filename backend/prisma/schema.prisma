@@ -1,0 +1,43 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+}
+
+model Contact {
+  id                String   @id @default(uuid())
+  phone_number      String   @unique
+  name              String   @default("Unknown")
+  avatar            String   @default("")
+  last_message      String   @default("")
+  last_message_time DateTime @default(now())
+  unread_count      Int      @default(0)
+  createdAt         DateTime @default(now())
+  updatedAt         DateTime @updatedAt
+}
+
+model Conversation {
+  id                String   @id @default(uuid())
+  phone_number      String
+  ai_reply_enabled  Boolean  @default(true)
+  last_interaction DateTime @default(now())
+  status            String   @default("active")
+  messages          Message[]
+  createdAt         DateTime @default(now())
+  updatedAt         DateTime @updatedAt
+}
+
+model Message {
+  id              String        @id @default(uuid())
+  phone_number    String
+  message         String
+  message_type    String        // user, bot
+  message_id      String?       @unique
+  timestamp       DateTime      @default(now())
+  conversation_id String?
+  conversation    Conversation? @relation(fields: [conversation_id], references: [id])
+  createdAt       DateTime      @default(now())
+  updatedAt       DateTime      @updatedAt
+}

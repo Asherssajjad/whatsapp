@@ -1,6 +1,5 @@
 const express = require('express');
 const cors = require('cors');
-const mongoose = require('mongoose');
 require('dotenv').config();
 
 const app = express();
@@ -9,14 +8,11 @@ const app = express();
 app.use(cors());
 app.use(express.json());
 
-// Database Connection
-const mongoURI = process.env.MONGODB_URI;
-if (!mongoURI) {
-    console.error("MONGODB_URI is not defined in .env");
+// Check for Database Configuration
+if (!process.env.DATABASE_URL) {
+    console.error("DATABASE_URL is not defined in .env");
 } else {
-    mongoose.connect(mongoURI)
-        .then(() => console.log('MongoDB Connected'))
-        .catch(err => console.error('MongoDB Connection Error:', err));
+    console.log('PostgreSQL Configuration Detected (Prisma)');
 }
 
 const webhookRoutes = require('./routes/webhookRoutes');

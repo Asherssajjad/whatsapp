@@ -1,6 +1,4 @@
-const Message = require('../models/Message');
-const Contact = require('../models/Contact');
-const Conversation = require('../models/Conversation');
+const prisma = require('../lib/prisma');
 const { getAIResponse } = require('../services/openaiService');
 const { sendMessage } = require('../services/whatsappService');
 
@@ -40,30 +38,46 @@ const handleIncomingMessage = async (req, res) => {
 
             try {
                 // Find or create contact
-                let contact = await Contact.findOne({ phone_number: from });
+                let contact = await prisma.contact.findUnique({ where: { phone_number: from } });
                 if (!contact) {
-                    contact = await Contact.create({ phone_number: from, last_message: text, last_message_time: new Date() });
+                    contact = await prisma.contact.create({
+                        data: {
+                            phone_number: from,
+                            last_message: text,
+                            last_message_time: new Date()
+                        }
+                    });
                 } else {
-                    contact.last_message = text;
-                    contact.last_message_time = new Date();
-                    contact.unread_count += 1;
-                    await contact.save();
+                    contact = await prisma.contact.update({
+                        where: { phone_number: from },
+                        data: {
+                            last_message: text,
+                            last_message_time: new Date(),
+                            unread_count: { increment: 1 }
+                        }
+                    });
                 }
 
                 // Find or create conversation
-                let conversation = await Conversation.findOne({ phone_number: from, status: 'active' });
+                let conversation = await prisma.conversation.findFirst({
+                    where: { phone_number: from, status: 'active' }
+                });
                 if (!conversation) {
-                    conversation = await Conversation.create({ phone_number: from });
+                    conversation = await prisma.conversation.create({
+                        data: { phone_number: from }
+                    });
                 }
 
                 // Save message to database
-                const newMessage = await Message.create({
-                    phone_number: from,
-                    message: text,
-                    message_type: 'user',
-                    message_id: messageId,
-                    timestamp: new Date(timestamp * 1000),
-                    conversation_id: conversation._id,
+                const newMessage = await prisma.message.create({
+                    data: {
+                        phone_number: from,
+                        message: text,
+                        message_type: 'user',
+                        message_id: messageId,
+                        timestamp: new Date(timestamp * 1000),
+                        conversation_id: conversation.id,
+                    }
                 });
 
                 // Emit real-time message via socket.io
@@ -74,7 +88,7 @@ const handleIncomingMessage = async (req, res) => {
 
                 // AI Response Logic (Check if auto-reply is enabled)
                 if (conversation.ai_reply_enabled) {
-                    await generateAndSendAIReply(from, text, conversation._id, io);
+                    await generateAndSendAIReply(from, text, conversation.id, io);
                 }
 
                 res.status(200).send('EVENT_RECEIVED');
@@ -96,13 +110,15 @@ const generateAndSendAIReply = async (from, text, conversationId, io) => {
         const waResponse = await sendMessage(from, aiResponseText);
 
         // Save AI response to database
-        const botMessage = await Message.create({
-            phone_number: from,
-            message: aiResponseText,
-            message_type: 'bot',
-            message_id: waResponse.messages[0].id,
-            timestamp: new Date(),
-            conversation_id: conversationId,
+        const botMessage = await prisma.message.create({
+            data: {
+                phone_number: from,
+                message: aiResponseText,
+                message_type: 'bot',
+                message_id: waResponse.messages[0].id,
+                timestamp: new Date(),
+                conversation_id: conversationId,
+            }
         });
 
         // Emit bot message via socket.io
