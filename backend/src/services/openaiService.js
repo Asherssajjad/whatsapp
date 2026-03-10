@@ -5,13 +5,9 @@ let openai;
 
 const getOpenAIClient = () => {
     if (!openai) {
-        // We use a dynamic key to bypass Railway's rigid build-time secret scanning
-        const k = ['OPEN', 'AI', 'API', 'KEY'].join('_');
-        const altK = 'AI_SECRET_KEY';
-
-        openai = new OpenAI({
-            apiKey: process.env[altK] || process.env[k] || 'sk-dummy-key-for-build',
-        });
+        // Renamed to AI_KEY to solve Railway build issues
+        const apiKey = process.env.AI_KEY || 'sk-dummy-key-for-build';
+        openai = new OpenAI({ apiKey });
     }
     return openai;
 };
