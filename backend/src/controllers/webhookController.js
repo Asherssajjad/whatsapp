@@ -1,6 +1,6 @@
 const prisma = require('../lib/prisma');
-const { getAIResponse } = require('../services/openaiService');
-const { sendMessage } = require('../services/whatsappService');
+const { getAIResponse } = require('../logic/aiProvider');
+const { sendMessage } = require('../logic/whatsappService');
 
 const verifyWebhook = (req, res) => {
     const mode = req.query['hub.mode'];

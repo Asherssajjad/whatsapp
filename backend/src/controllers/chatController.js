@@ -1,5 +1,5 @@
 const prisma = require('../lib/prisma');
-const { sendMessage } = require('../services/whatsappService');
+const { sendMessage } = require('../logic/whatsappService');
 
 const getContacts = async (req, res) => {
     try {

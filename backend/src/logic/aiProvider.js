@@ -5,8 +5,8 @@ let openai;
 
 const getOpenAIClient = () => {
     if (!openai) {
-        // Renamed to AI_KEY to solve Railway build issues
-        const apiKey = process.env.AI_KEY || 'sk-dummy-key-for-build';
+        // Renamed to APP_AI_TOKEN to solve Railway build issues
+        const apiKey = process.env.APP_AI_TOKEN || 'sk-dummy-key-for-build';
         openai = new OpenAI({ apiKey });
     }
     return openai;
