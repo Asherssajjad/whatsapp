@@ -1,13 +1,21 @@
 const OpenAI = require('openai');
 require('dotenv').config();
 
-const openai = new OpenAI({
-    apiKey: process.env.OPENAI_API_KEY,
-});
+let openai;
+
+const getOpenAIClient = () => {
+    if (!openai) {
+        openai = new OpenAI({
+            apiKey: process.env.OPENAI_API_KEY || 'sk-dummy-key-for-build',
+        });
+    }
+    return openai;
+};
 
 const getAIResponse = async (userMessage) => {
     try {
-        const response = await openai.chat.completions.create({
+        const client = getOpenAIClient();
+        const response = await client.chat.completions.create({
             model: 'gpt-3.5-turbo',
             messages: [
                 { role: 'system', content: 'You are a helpful customer support AI for a business called "MyBusiness". Be polite and concise.' },
