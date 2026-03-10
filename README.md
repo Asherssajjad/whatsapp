@@ -32,7 +32,7 @@ This is a production-ready WhatsApp AI chatbot dashboard built with Node.js, Exp
    VERIFY_TOKEN=your_custom_verify_token
    ACCESS_TOKEN=your_meta_access_token
    PHONE_NUMBER_ID=your_whatsapp_phone_number_id
-   OPENAI_API_KEY=your_openai_api_key
+   AI_API_KEY_HIDDEN=your_openai_api_key
    ```
 4. Start the server: `npm run dev`.
 
@@ -63,7 +63,7 @@ DATABASE_URL="postgresql://user:password@localhost:5432/whatsapp_bot"
 VERIFY_TOKEN="DigitalMinds_Bot_2026"
 ACCESS_TOKEN="your_meta_access_token"
 PHONE_NUMBER_ID="your_phone_number_id"
-OPENAI_API_KEY="your_openai_api_key"
+AI_KEY="your_key"
 ```
 
 ### 3. Install Dependencies
@@ -86,11 +86,9 @@ Run both backend and frontend from the root:
 
 ---
 
-## 🚀 Troubleshooting Railway Builds
+If you see an error like `secret AI_KEY: not found` during build on Railway:
 
-If you see an error like `secret OPENAI_API_KEY: not found` during build on Railway:
-
-1. **Add the Variable**: Go to the **Variables** tab in Railway and add `OPENAI_API_KEY` (even a dummy value if you don't have one).
+1. **Add the Variable**: Go to the **Variables** tab in Railway and add `AI_KEY` (even a dummy value if you don't have one).
 2. **Build Settings**: Ensure you haven't enabled any "Build Secrets" that you haven't provided values for.
 3. **Database URL**: Make sure `DATABASE_URL` is added to your backend service variables.
 
