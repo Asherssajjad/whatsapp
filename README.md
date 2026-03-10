@@ -46,6 +46,54 @@ This is a production-ready WhatsApp AI chatbot dashboard built with Node.js, Exp
    ```
 4. Start the development server: `npm run dev`.
 
+## Local Development & Testing
+
+To run and test the system on your local machine:
+
+### 1. Prerequisites
+- **Node.js** (v20 or higher)
+- **PostgreSQL** (Running locally or a remote URL)
+- **Meta Developer Account** (For WhatsApp API)
+
+### 2. Setup Environment Variables
+Create a `.env` file in the `backend` folder:
+```env
+PORT=5000
+DATABASE_URL="postgresql://user:password@localhost:5432/whatsapp_bot"
+VERIFY_TOKEN="DigitalMinds_Bot_2026"
+ACCESS_TOKEN="your_meta_access_token"
+PHONE_NUMBER_ID="your_phone_number_id"
+OPENAI_API_KEY="your_openai_api_key"
+```
+
+### 3. Install Dependencies
+Run this in the root directory:
+```bash
+npm install
+```
+
+### 4. Initialize Database
+Sync your database schema with Prisma:
+```bash
+cd backend
+npx prisma db push
+```
+
+### 5. Start Development Servers
+Run both backend and frontend from the root:
+- Backend: `npm run backend:dev`
+- Frontend: `npm run frontend:dev`
+
+---
+
+## 🚀 Troubleshooting Railway Builds
+
+If you see an error like `secret OPENAI_API_KEY: not found` during build on Railway:
+
+1. **Add the Variable**: Go to the **Variables** tab in Railway and add `OPENAI_API_KEY` (even a dummy value if you don't have one).
+2. **Build Settings**: Ensure you haven't enabled any "Build Secrets" that you haven't provided values for.
+3. **Database URL**: Make sure `DATABASE_URL` is added to your backend service variables.
+
 ### 4. Webhook Configuration
 - Go to [Meta Developers Portal](https://developers.facebook.com/).
 - Set Webhook URL to: `https://yourdomain.com/webhook`.
