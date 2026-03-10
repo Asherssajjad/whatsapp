@@ -94,8 +94,8 @@ If you see an error like `secret AI_KEY: not found` during build on Railway:
 
 ### 4. Webhook Configuration
 - Go to [Meta Developers Portal](https://developers.facebook.com/).
-- Set Webhook URL to: `https://yourdomain.com/webhook`.
-- Set Verify Token to match `VERIFY_TOKEN` in your backend `.env`.
+- Set Webhook URL to: `https://whatsapp-production-c833.up.railway.app/webhook`.
+- Set Verify Token to match `VERIFY_TOKEN` in your backend variables.
 - Subscribe to `messages` in the Webhooks section.
 
 ## Folder Structure
@@ -126,4 +126,8 @@ If you see an error like `secret AI_KEY: not found` during build on Railway:
     -   **For Frontend Service**: Go to `Settings` -> `General` -> `Root Directory` and set it to `/frontend`.
 3.  **Environment Variables**:
     -   Ensure each service has its own `.env` values set in the Railway dashboard.
-4.  **Auto-Configuration**: This repository includes a `railway.json` file which helps Railway automatically detect the services. If you use the "Deploy from railway.json" option during project creation, this setup will be automated.
+4. **Auto-Configuration**: This repository includes a `railway.json` file which helps Railway automatically detect the services. 
+
+### 🚀 Production URLs
+- **Backend (Engine)**: `https://whatsapp-production-c833.up.railway.app`
+- **Frontend (Dashboard)**: (Check your dashboard service for the generated domain)
