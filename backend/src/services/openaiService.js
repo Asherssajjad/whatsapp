@@ -6,7 +6,7 @@ let openai;
 const getOpenAIClient = () => {
     if (!openai) {
         openai = new OpenAI({
-            apiKey: process.env.OPENAI_API_KEY || 'sk-dummy-key-for-build',
+            apiKey: process.env['AI_SECRET_KEY'] || process.env['OPENAI_API_KEY'] || 'sk-dummy-key-for-build',
         });
     }
     return openai;
