@@ -10,11 +10,14 @@ console.log('PostgreSQL Configuration: Initializing Hybrid Handshake...');
 
 const pool = new Pool({
   connectionString: connectionString,
-  // Hybrid SSL: Required for Railway Public Proxy
   ssl: rawUrl.includes('rlwy.net') ? { rejectUnauthorized: false } : false,
   max: 10,
   idleTimeoutMillis: 30000,
-  connectionTimeoutMillis: 15000,
+  connectionTimeoutMillis: 20000,
+  // Survivor settings for Cross-Project Public Proxy
+  keepAlive: true,
+  statement_timeout: 60000,
+  query_timeout: 60000,
 });
 
 // CRITICAL: Prevent ECONNRESET from crashing the app
