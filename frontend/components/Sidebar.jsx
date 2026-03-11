@@ -6,60 +6,57 @@ import {
     Search, 
     MoreVertical, 
     MessageSquare, 
-    CircleDashed, 
-    Users, 
-    Archive, 
     Settings, 
-    Filter,
     Plus,
-    CheckCheck
+    CheckCheck,
+    Users
 } from 'lucide-react';
 
 const Sidebar = ({ contacts, activeContact, onSelectContact }) => {
     return (
-        <div className="flex h-full border-r border-gray-700/30">
+        <div className="flex h-full border-r border-gray-700/20">
             {/* Leftmost Icon Rail */}
-            <div className="w-[60px] bg-[#202c33] flex flex-col items-center py-4 space-y-6 text-[#8696a0]">
-                <div className="p-2 hover:bg-[#374248] rounded-full cursor-pointer transition-colors relative">
+            <div className="w-[64px] bg-[#202c33] flex flex-col items-center py-4 space-y-6 text-[#8696a0]">
+                <div className="p-2 hover:bg-[#374248] rounded-full cursor-pointer transition-colors relative group">
                     <MessageSquare size={24} className="text-[#d1d7db]" />
-                    <div className="absolute top-1 right-1 w-4 h-4 bg-[#00a884] rounded-full text-[10px] flex items-center justify-center text-[#111b21] font-bold">34</div>
+                    <div className="absolute top-1 right-1 w-4 h-4 bg-[#00a884] rounded-full text-[10px] flex items-center justify-center text-[#111b21] font-bold border-2 border-[#202c33]">34</div>
                 </div>
-                <CircleDashed size={24} className="cursor-pointer hover:text-[#d1d7db]" />
-                <Users size={24} className="cursor-pointer hover:text-[#d1d7db]" />
+                
                 <div className="flex-1"></div>
-                <Settings size={24} className="cursor-pointer hover:text-[#d1d7db]" />
-                <div className="w-8 h-8 rounded-full bg-[#374248] shadow-inner mb-2 overflow-hidden">
-                    <img src="https://ui-avatars.com/api/?name=Admin&background=00a884&color=fff" alt="profile" />
+                
+                <Settings size={22} className="cursor-pointer hover:text-[#d1d7db] mb-2" />
+                <div className="w-10 h-10 rounded-full bg-[#374248] shadow-inner mb-4 overflow-hidden border border-gray-700/30">
+                    <img src="https://ui-avatars.com/api/?name=Admin&background=00a884&color=fff&size=64" alt="profile" />
                 </div>
             </div>
 
             {/* Chats Column */}
-            <div className="w-[400px] bg-[#111b21] flex flex-col h-full overflow-hidden">
+            <div className="w-[410px] bg-[#111b21] flex flex-col h-full overflow-hidden">
                 {/* Header */}
-                <div className="px-5 pt-5 pb-3 flex items-center justify-between">
-                    <h1 className="text-2xl font-bold text-[#e9edef]">WhatsApp</h1>
-                    <div className="flex items-center space-x-4 text-[#8696a0]">
+                <div className="px-[16px] pt-[20px] pb-[12px] flex items-center justify-between">
+                    <h1 className="text-[22px] font-bold text-[#e9edef] tracking-tight">Chats</h1>
+                    <div className="flex items-center space-x-[24px] text-[#8696a0]">
                         <Plus size={20} className="cursor-pointer hover:text-[#d1d7db]" />
                         <MoreVertical size={20} className="cursor-pointer hover:text-[#d1d7db]" />
                     </div>
                 </div>
 
                 {/* Search and Filters */}
-                <div className="px-3 pb-3">
-                    <div className="bg-[#202c33] rounded-lg flex items-center px-3 py-1.5 mb-3 ring-1 ring-offset-0 ring-transparent focus-within:ring-[#00a884]">
-                        <Search size={18} className="text-[#8696a0] mr-4" />
+                <div className="px-[12px] pb-[12px]">
+                    <div className="bg-[#202c33] rounded-[8px] flex items-center px-[12px] py-[6px] mb-[12px]">
+                        <Search size={16} className="text-[#8696a0] mr-4 ml-1" />
                         <input 
                             type="text" 
                             placeholder="Search or start a new chat" 
-                            className="bg-transparent border-none text-sm w-full outline-none text-[#d1d7db] placeholder-[#8696a0]"
+                            className="bg-transparent border-none text-[15px] w-full outline-none text-[#d1d7db] placeholder-[#8696a0] font-light"
                         />
                     </div>
                     
-                    <div className="flex space-x-2 overflow-x-auto pb-1 scrollbar-hide">
+                    <div className="flex space-x-2 overflow-x-auto pb-1 no-scrollbar">
                         {['All', 'Unread', 'Favorites', 'Groups'].map((filter) => (
                             <button
                                 key={filter}
-                                className={`px-3 py-1 rounded-full text-xs font-semibold whitespace-nowrap transition-colors ${
+                                className={`px-[12px] py-[4px] rounded-full text-[13px] font-medium whitespace-nowrap transition-colors ${
                                     filter === 'All' 
                                         ? 'bg-[#00a884]/20 text-[#00a884]' 
                                         : 'bg-[#202c33] text-[#8696a0] hover:bg-[#374248]'
@@ -68,54 +65,49 @@ const Sidebar = ({ contacts, activeContact, onSelectContact }) => {
                                 {filter === 'Unread' ? `Unread 34` : filter}
                             </button>
                         ))}
-                        <button className="p-1 text-[#8696a0] hover:text-[#d1d7db]">
-                            <Plus size={16} />
-                        </button>
                     </div>
                 </div>
 
                 {/* List Body */}
-                <div className="flex-1 overflow-y-auto mt-2">
-                    {/* Fixed Rows */}
-                    <div className="px-4 py-3 flex items-center space-x-4 hover:bg-[#202c33] cursor-pointer transition-colors border-b border-gray-800/20">
-                        <Archive size={20} className="text-[#00a884] ml-2" />
-                        <span className="text-[#e9edef] text-sm font-medium">Archived</span>
-                    </div>
-
+                <div className="flex-1 overflow-y-auto no-scrollbar">
                     {/* Contacts List */}
                     {contacts.map((contact) => (
                         <div
                             key={contact.phone_number}
                             onClick={() => onSelectContact(contact)}
-                            className={`px-4 py-3 flex items-center cursor-pointer transition-colors relative ${
+                            className={`px-4 flex items-center cursor-pointer transition-colors relative min-h-[72px] ${
                                 activeContact?.phone_number === contact.phone_number
                                     ? 'bg-[#2a3942]'
                                     : 'hover:bg-[#202c33]'
                             }`}
                         >
-                            <div className="w-12 h-12 rounded-full bg-[#6a7175] flex items-center justify-center font-bold text-lg text-white/50 flex-shrink-0 overflow-hidden">
+                            <div className="w-[49px] h-[49px] rounded-full bg-[#6a7175] flex items-center justify-center text-white/50 flex-shrink-0 overflow-hidden shadow-sm">
                                 {contact.avatar ? (
                                     <img src={contact.avatar} alt="avatar" className="w-full h-full object-cover" />
                                 ) : (
-                                    <Users size={24} />
+                                    <div className="bg-[#51585c] w-full h-full flex items-center justify-center">
+                                        <Users size={28} className="text-[#cfd4d6]" />
+                                    </div>
                                 )}
                             </div>
-                            <div className="ml-4 flex-1 border-b border-gray-800/30 pb-3 mt-1 overflow-hidden">
+                            <div className="ml-4 flex-1 border-b border-gray-800/20 py-3 flex flex-col justify-center h-full overflow-hidden">
                                 <div className="flex justify-between items-center mb-0.5">
-                                    <span className="text-[#e9edef] font-medium truncate">
+                                    <span className="text-[#e9edef] text-[17px] leading-tight truncate font-normal">
                                         {contact.name || contact.phone_number}
                                     </span>
-                                    <span className={`text-[11px] ${contact.unread_count > 0 ? 'text-[#00a884] font-bold' : 'text-[#8696a0]'}`}>
+                                    <span className={`text-[12px] ${contact.unread_count > 0 ? 'text-[#00a884] font-bold' : 'text-[#8696a0]'}`}>
                                         {contact.last_message_time ? format(new Date(contact.last_message_time), 'HH:mm') : ''}
                                     </span>
                                 </div>
                                 <div className="flex justify-between items-center">
-                                    <div className="flex items-center text-[#8696a0] text-sm truncate w-full">
-                                        {!contact.unread_count && <CheckCheck size={16} className="text-[#53bdeb] mr-1 flex-shrink-0" />}
-                                        <span className="truncate">{contact.last_message || 'No messages yet'}</span>
+                                    <div className="flex items-center text-[#8696a0] text-[14px] truncate w-full pr-2">
+                                        {!contact.unread_count && (
+                                            <CheckCheck size={16} className="text-[#53bdeb] mr-1 flex-shrink-0" />
+                                        )}
+                                        <span className="truncate">{contact.last_message || '—'}</span>
                                     </div>
                                     {contact.unread_count > 0 && (
-                                        <div className="ml-2 bg-[#00a884] text-[#111b21] text-[10px] min-w-[18px] h-[18px] px-1.5 flex items-center justify-center rounded-full font-black">
+                                        <div className="bg-[#00a884] text-[#111b21] text-[11px] min-w-[19px] h-[19px] px-1.5 flex items-center justify-center rounded-full font-bold">
                                             {contact.unread_count}
                                         </div>
                                     )}
@@ -123,15 +115,19 @@ const Sidebar = ({ contacts, activeContact, onSelectContact }) => {
                             </div>
                         </div>
                     ))}
+                    
+                    {contacts.length === 0 && (
+                       <div className="p-8 text-center text-[#8696a0] text-sm italic">
+                           No chats found. Use the + icon to start one.
+                       </div>
+                    )}
                 </div>
                 
-                {/* Footer Link */}
-                <div className="p-3 text-center border-t border-gray-800/10">
-                    <div className="flex items-center justify-center space-x-2 text-[#00a884] text-xs font-bold hover:underline cursor-pointer">
-                        <div className="bg-[#00a884] rounded-full p-0.5">
-                            <Plus size={10} className="text-[#111b21]" />
-                        </div>
-                        <span>Get WhatsApp for Windows</span>
+                {/* Footer Section */}
+                <div className="py-2 flex items-center justify-center">
+                    <div className="text-[#8696a0] text-[11px] flex items-center space-x-1 opacity-50">
+                        <svg viewBox="0 0 24 24" width="12" height="12" fill="currentColor"><path d="M12 2C6.477 2 2 6.477 2 12s4.477 10 10 10 10-4.477 10-10S17.523 2 12 2zm0 18c-4.411 0-8-3.589-8-8s3.589-8 8-8 8 3.589 8 8-3.589 8-8 8zm0-13a1 1 0 0 0-1 1v4a1 1 0 0 0 .293.707l2.828 2.829a1 1 0 1 0 1.415-1.415L13 9.414V8a1 1 0 0 0-1-1z"></path></svg>
+                        <span>Encrypted chat</span>
                     </div>
                 </div>
             </div>

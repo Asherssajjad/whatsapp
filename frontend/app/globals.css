@@ -1,43 +1,33 @@
 @import "tailwindcss";
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap');
 
 :root {
-  --background: #111b21;
-  --foreground: #e9edef;
-  --sidebar-bg: #111b21;
-  --panel-header: #202c33;
-  --panel-bg: #0b141a;
-  --chat-bg: #0b141a;
-  --search-input: #202c33;
-  --active-chat: #2a3942;
-  --hover-chat: #202c33;
-  --incoming-msg: #202c33;
-  --outgoing-msg: #005c4b;
-  --primary-text: #e9edef;
-  --secondary-text: #8696a0;
-  --accent: #00a884;
+  --wa-bg-main: #0b141a;
+  --wa-bg-sidebar: #111b21;
+  --wa-bg-header: #202c33;
+  --wa-bg-input: #2a3942;
+  --wa-green: #00a884;
+  --wa-text-primary: #e9edef;
+  --wa-text-secondary: #8696a0;
+  --wa-bubble-out: #005c4b;
+  --wa-bubble-in: #202c33;
+}
+
+* {
+  box-sizing: border-box;
+  padding: 0;
+  margin: 0;
+  font-family: 'Segoe UI', 'Roboto', 'Helvetica Neue', 'Helvetica', 'Arial', sans-serif;
 }
 
 body {
-  color: var(--primary-text);
-  background: var(--background);
-  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+  background-color: var(--wa-bg-main);
+  color: var(--wa-text-primary);
   overflow: hidden;
+  height: 100vh;
 }
 
-/* WhatsApp Background Pattern Wrapper */
-.whatsapp-pattern {
-  background-image: url('https://user-images.githubusercontent.com/15075759/28719144-86dc0f70-73b1-11e7-911d-60d70fcded21.png');
-  background-repeat: repeat;
-  opacity: 0.06;
-  position: absolute;
-  top: 0;
-  left: 0;
-  width: 100%;
-  height: 100%;
-  pointer-events: none;
-}
-
-/* Custom Scrollbar for WhatsApp style */
+/* Custom Scrollbar to match WhatsApp */
 ::-webkit-scrollbar {
   width: 6px;
 }
