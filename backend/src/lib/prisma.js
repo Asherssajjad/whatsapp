@@ -3,7 +3,7 @@ require('dotenv').config();
 
 const rawUrl = process.env.DATABASE_URL || '';
 
-// If using a public URL (rlwy.net) from another project, it MUST have sslmode=no-verify
+// Auto-inject SSL for Railway public proxy if missing
 let connectionUrl = rawUrl;
 if (rawUrl.includes('rlwy.net') && !rawUrl.includes('sslmode')) {
   connectionUrl += (rawUrl.includes('?') ? '&' : '?') + 'sslmode=no-verify';
@@ -19,8 +19,13 @@ const prisma = new PrismaClient({
 });
 
 async function connectWithRetry(retries = 5) {
+  if (!connectionUrl) {
+    console.error('❌ ERROR: DATABASE_URL is not defined in environment variables!');
+    return;
+  }
+
   const maskedUrl = connectionUrl.replace(/:\/\/.*@/, '://****:****@');
-  console.log(`📡 Attempting cross-project connection to: ${maskedUrl}`);
+  console.log(`📡 Connecting to: ${maskedUrl}`);
 
   for (let i = 0; i < retries; i++) {
     try {
