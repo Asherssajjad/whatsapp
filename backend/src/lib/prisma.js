@@ -3,11 +3,15 @@ require('dotenv').config();
 
 const prisma = new PrismaClient({
   log: ['error', 'warn'],
-  // Give Railway's internal network 20 seconds to resolve the hostname
   connectTimeout: 20000,
 });
 
 async function connectWithRetry(retries = 5) {
+  const rawUrl = process.env.DATABASE_URL || '';
+  const maskedUrl = rawUrl.replace(/:\/\/.*@/, '://****:****@');
+  
+  console.log(`📡 Attempting to connect to: ${maskedUrl}`);
+
   for (let i = 0; i < retries; i++) {
     try {
       await prisma.$connect();
@@ -15,8 +19,10 @@ async function connectWithRetry(retries = 5) {
       return;
     } catch (err) {
       console.error(`❌ Connection attempt ${i + 1} failed:`, err.message);
-      if (i === retries - 1) process.exit(1);
-      // Wait 3 seconds before trying again
+      if (i === retries - 1) {
+        console.error('💡 TIP: If using internal URL, ensure the hostname (e.g. postgres.railway.internal) matches your Service Name exactly.');
+        process.exit(1);
+      }
       await new Promise(res => setTimeout(res, 3000));
     }
   }
