@@ -8,35 +8,35 @@ const ChatBubble = ({ message }) => {
     const isBot = message.message_type === 'bot';
 
     return (
-        <div className={`flex w-full mb-6 ${isBot ? 'justify-start' : 'justify-end'}`}>
+        <div className={`flex w-full mb-[2px] ${isBot ? 'justify-start' : 'justify-end'}`}>
             <div
-                className={`max-w-[80%] min-w-[120px] rounded-3xl px-5 py-4 shadow-2xl transition-all duration-300 relative group ${
+                className={`max-w-[85%] min-w-[60px] px-2 py-1.5 shadow-sm relative text-[14.2px] leading-tight ${
                     isBot
-                        ? 'bg-gradient-to-br from-blue-600 to-indigo-700 text-white rounded-tl-none shadow-blue-500/20'
-                        : 'bg-white/10 glass text-gray-100 rounded-tr-none border border-white/10'
+                        ? 'bg-[#202c33] text-[#e9edef] rounded-lg rounded-tl-none'
+                        : 'bg-[#005c4b] text-[#e9edef] rounded-lg rounded-tr-none'
                 }`}
             >
-                {/* Message Content */}
-                <p className="text-[15px] leading-relaxed font-medium whitespace-pre-wrap">
-                    {message.message}
-                </p>
+                {/* Bubble Tail Replacement (Simple approximation with rounded corners) */}
+                <div className={`absolute top-0 w-2 h-2 ${
+                    isBot 
+                        ? '-left-1 bg-[#202c33] rounded-sm rotate-45 z-0' 
+                        : '-right-1 bg-[#005c4b] rounded-sm rotate-45 z-0'
+                }`}></div>
 
-                {/* Footer: Time and Status */}
-                <div className={`flex justify-end items-center mt-3 space-x-2 ${isBot ? 'text-white/60' : 'text-gray-500'}`}>
-                    <span className="text-[10px] font-black uppercase tracking-widest">
-                        {message.timestamp ? format(new Date(message.timestamp), 'HH:mm') : format(new Date(), 'HH:mm')}
-                    </span>
-                    {!isBot && (
-                        <div className="flex">
-                            <CheckCheck size={14} className="text-blue-500" />
-                        </div>
-                    )}
+                {/* Message Content */}
+                <div className="relative z-10 px-1 pt-0.5">
+                    <span className="whitespace-pre-wrap">{message.message}</span>
+                    
+                    {/* Inline Footer for Time and Status */}
+                    <div className="inline-flex items-end ml-4 float-right mt-1.5 space-x-1 translate-y-0.5">
+                        <span className="text-[11px] text-[#8696a0] opacity-90 uppercase tracking-tighter">
+                            {message.timestamp ? format(new Date(message.timestamp), 'HH:mm') : format(new Date(), 'HH:mm')}
+                        </span>
+                        {!isBot && (
+                            <CheckCheck size={15} className="text-[#53bdeb]" />
+                        )}
+                    </div>
                 </div>
-                
-                {/* Decorative Accent for Bot messages */}
-                {isBot && (
-                    <div className="absolute -top-1 -left-1 w-2 h-2 bg-blue-400 rounded-full animate-ping opacity-75"></div>
-                )}
             </div>
         </div>
     );
