@@ -3,7 +3,7 @@ require('dotenv').config();
 
 const PHONE_NUMBER_ID = process.env.PHONE_NUMBER_ID;
 const ACCESS_TOKEN = process.env.ACCESS_TOKEN;
-const API_VERSION = 'v18.0';
+const API_VERSION = 'v22.0';
 
 const sendMessage = async (to, messageText) => {
     const url = `https://graph.facebook.com/${API_VERSION}/${PHONE_NUMBER_ID}/messages`;
