@@ -2,47 +2,40 @@
 
 import React from 'react';
 import { format } from 'date-fns';
-import { CheckCheck } from 'lucide-react';
+import { CheckCheck, Bot } from 'lucide-react';
 
 const ChatBubble = ({ message }) => {
     const isBot = message.message_type === 'bot';
 
     return (
-        <div className={`flex w-full mb-1 ${isBot ? 'justify-start' : 'justify-end'}`}>
-            <div
-                className={`max-w-[85%] min-w-[70px] px-[8px] py-[6px] shadow-sm relative text-[14.2px] ${
-                    isBot
-                        ? 'bg-[#202c33] text-[#e9edef] rounded-[8px] rounded-tl-none'
-                        : 'bg-[#005c4b] text-[#e9edef] rounded-[8px] rounded-tr-none'
-                }`}
-            >
-                {/* Bubble Tail Replacement */}
-                <svg 
-                    className={`absolute top-0 ${isBot ? '-left-[10px]' : '-right-[10px]'} z-0`} 
-                    viewBox="0 0 10 21" 
-                    width="10" 
-                    height="21"
+        <div className={`flex w-full mb-6 ${isBot ? 'justify-start' : 'justify-end'}`}>
+            <div className={`flex flex-col max-w-[70%] ${isBot ? 'items-start' : 'items-end'}`}>
+                {isBot && (
+                    <div className="flex items-center space-x-2 mb-2 ml-1">
+                        <div className="w-5 h-5 rounded-md abelops-gradient flex items-center justify-center">
+                            <Bot size={12} className="text-white" />
+                        </div>
+                        <span className="text-[10px] uppercase font-black text-zinc-500 tracking-[0.2em]">Abelops AI</span>
+                    </div>
+                )}
+                
+                <div
+                    className={`px-5 py-4 rounded-3xl relative transition-all duration-300 ${
+                        isBot
+                            ? 'bg-[#18181b] text-zinc-100 rounded-tl-none border border-white/5'
+                            : 'abelops-gradient text-white rounded-tr-none shadow-xl shadow-blue-500/10'
+                    }`}
                 >
-                    <path 
-                        d={isBot 
-                            ? "M10 0 L10 21 L0 0 Z" 
-                            : "M0 0 L0 21 L10 0 Z"
-                        } 
-                        fill={isBot ? "#202c33" : "#005c4b"} 
-                    />
-                </svg>
+                    <p className="text-[15px] leading-relaxed font-light whitespace-pre-wrap">
+                        {message.message}
+                    </p>
 
-                {/* Message Content */}
-                <div className="relative z-10 px-1 pt-0.5 pb-2">
-                    <span className="whitespace-pre-wrap leading-snug">{message.message}</span>
-                    
-                    {/* Inline Footer for Time and Status */}
-                    <div className="absolute bottom-1 right-2 flex items-center space-x-1">
-                        <span className="text-[11px] text-[#8696a0] opacity-80 uppercase font-light">
+                    <div className={`flex items-center mt-3 justify-end space-x-2 opacity-50`}>
+                        <span className="text-[10px] font-bold tracking-tighter uppercase font-mono">
                             {message.timestamp ? format(new Date(message.timestamp), 'HH:mm') : format(new Date(), 'HH:mm')}
                         </span>
                         {!isBot && (
-                            <CheckCheck size={16} className="text-[#53bdeb] opacity-90" />
+                            <CheckCheck size={14} className="text-white" />
                         )}
                     </div>
                 </div>
