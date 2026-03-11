@@ -1,39 +1,46 @@
 const { PrismaClient } = require('@prisma/client');
+const { PrismaPg } = require('@prisma/adapter-pg');
+const { Pool } = require('pg');
 require('dotenv').config();
 
 const rawUrl = process.env.DATABASE_URL || '';
 
-// Auto-inject SSL for Railway public proxy if missing
+// Robust URL formatting for Railway Public Proxy
 let connectionUrl = rawUrl;
-if (rawUrl.includes('rlwy.net') && !rawUrl.includes('sslmode')) {
-  connectionUrl += (rawUrl.includes('?') ? '&' : '?') + 'sslmode=no-verify';
+if (!connectionUrl.includes('sslmode')) {
+  connectionUrl += (connectionUrl.includes('?') ? '&' : '?') + 'sslmode=no-verify';
+}
+if (!connectionUrl.includes('connect_timeout')) {
+  connectionUrl += '&connect_timeout=30';
 }
 
-const prisma = new PrismaClient({
-  datasources: {
-    db: {
-      url: connectionUrl,
-    },
-  },
-  log: ['error', 'warn'],
+const pool = new Pool({
+  connectionString: connectionUrl,
+  max: 10,
+  idleTimeoutMillis: 30000,
+  connectionTimeoutMillis: 10000,
 });
 
+const adapter = new PrismaPg(pool);
+const prisma = new PrismaClient({ adapter });
+
 async function connectWithRetry(retries = 5) {
-  if (!connectionUrl) {
-    console.error('❌ ERROR: DATABASE_URL is not defined in environment variables!');
+  if (!rawUrl) {
+    console.error('❌ DATABASE_URL missing!');
     return;
   }
-
+  
   const maskedUrl = connectionUrl.replace(/:\/\/.*@/, '://****:****@');
-  console.log(`📡 Connecting to: ${maskedUrl}`);
+  console.log(`📡 JS Adapter connecting to: ${maskedUrl}`);
 
   for (let i = 0; i < retries; i++) {
     try {
-      await prisma.$connect();
-      console.log('✅ Successfully connected to Database');
+      // With the adapter, we can check the pool connection directly
+      await pool.query('SELECT 1');
+      console.log('✅ JS Adapter: Successfully reached Database via Proxy');
       return;
     } catch (err) {
-      console.error(`❌ Connection attempt ${i + 1} failed:`, err.message);
+      console.error(`❌ Attempt ${i + 1} failed:`, err.message);
       if (i === retries - 1) process.exit(1);
       await new Promise(res => setTimeout(res, 5000));
     }
