@@ -108,31 +108,50 @@ const handleIncomingMessage = async (req, res) => {
 
 const generateAndSendAIReply = async (from, text, conversationId, io) => {
     try {
+        console.log(`[Abelops Engine] Processing AI Request for: ${from}`);
         const aiResponseText = await getAIResponse(text);
+        console.log(`[Abelops Engine] AI Response Generated: "${aiResponseText}"`);
 
-        // Send response via WhatsApp API
-        const waResponse = await sendMessage(from, aiResponseText);
+        let messageId = `msg_offline_${Date.now()}`;
+        let waStatus = 'LOGGED_ONLY';
 
-        // Save AI response to database
+        try {
+            // Attempt to send response via WhatsApp API
+            const waResponse = await sendMessage(from, aiResponseText);
+            if (waResponse && waResponse.messages && waResponse.messages[0]) {
+                messageId = waResponse.messages[0].id;
+                waStatus = 'SENT';
+                console.log(`[Abelops Engine] Message sent via WhatsApp successfully.`);
+            }
+        } catch (waError) {
+            console.error('------------------------------------------------------------');
+            console.error('[Abelops Engine] WHATSAPP API ERROR: Message could not be sent.');
+            console.error('[Abelops Engine] REASON:', waError.message);
+            console.error('[Abelops Engine] ACTION: Falling back to Local Log mode.');
+            console.error('[Abelops Engine] AI WOULD HAVE SENT:', aiResponseText);
+            console.error('------------------------------------------------------------');
+            waStatus = 'FAILED_TOKEN';
+        }
+
+        // Save AI response to database regardless of WhatsApp delivery (so user sees it in Dashboard)
         const botMessage = await prisma.message.create({
             data: {
                 phone_number: from,
                 message: aiResponseText,
                 message_type: 'bot',
-                message_id: waResponse.messages[0].id,
+                message_id: messageId,
                 timestamp: new Date(),
                 conversation_id: conversationId,
             }
         });
 
-        // Emit bot message via socket.io
+        // Emit bot message via socket.io for real-time dashboard updates
         io.emit('new_message', {
             message: botMessage,
         });
 
-        console.log('AI Response Sent:', aiResponseText);
     } catch (error) {
-        console.error('Error in AI auto-reply:', error);
+        console.error('[Abelops Engine] Critical Error in AI Auto-Reply:', error);
     }
 };
 

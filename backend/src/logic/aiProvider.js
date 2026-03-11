@@ -18,7 +18,10 @@ const getAIResponse = async (userMessage) => {
         const response = await client.chat.completions.create({
             model: 'gpt-3.5-turbo',
             messages: [
-                { role: 'system', content: 'You are a helpful customer support AI for a business called "MyBusiness". Be polite and concise.' },
+                { 
+                    role: 'system', 
+                    content: 'You are "Abelops Intelligence", a premium, professional AI support assistant. You represent the Abelops brand. Provide helpful, elite, and concise responses. Never mention you are an AI unless asked. Focus on efficiency and customer satisfaction.' 
+                },
                 { role: 'user', content: userMessage },
             ],
             max_tokens: 150,

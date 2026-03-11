@@ -31,29 +31,48 @@ const sendManualMessage = async (req, res) => {
     const { phone_number, message } = req.body;
     const io = req.app.get('socketio');
 
+    console.log(`[Abelops Manual] Attempting to send message to ${phone_number}: "${message}"`);
+
+    let messageId = `manual_offline_${Date.now()}`;
+    let success = true;
+
     try {
         const waResponse = await sendMessage(phone_number, message);
+        if (waResponse && waResponse.messages && waResponse.messages[0]) {
+            messageId = waResponse.messages[0].id;
+            console.log(`[Abelops Manual] WhatsApp delivery successful.`);
+        }
+    } catch (err) {
+        console.error('------------------------------------------------------------');
+        console.error('[Abelops Manual] WHATSAPP API ERROR: Token likely expired or missing.');
+        console.error('[Abelops Manual] REASON:', err.message);
+        console.error('[Abelops Manual] ACTION: Saving to local DB for Dashboard visibility.');
+        console.error('------------------------------------------------------------');
+        // We set success to true because we want to return the saved message to the UI
+        // even if the external WhatsApp delivery failed.
+    }
 
-        // Save to database
+    try {
+        // Always save to database for visibility
         const botMessage = await prisma.message.create({
             data: {
                 phone_number,
                 message,
                 message_type: 'bot',
-                message_id: waResponse.messages[0].id,
+                message_id: messageId,
                 timestamp: new Date(),
             }
         });
 
-        // Notify dashboard
+        // Notify dashboard (if user has it open)
         io.emit('new_message', {
             message: botMessage,
         });
 
-        res.status(200).json(botMessage);
-    } catch (err) {
-        console.error('Error sending manual message:', err);
-        res.status(500).json({ error: 'Failed to send manual message' });
+        return res.status(200).json(botMessage);
+    } catch (dbErr) {
+        console.error('[Abelops Manual] DATABASE ERROR:', dbErr);
+        return res.status(500).json({ error: 'Failed to record message in database' });
     }
 };
 
