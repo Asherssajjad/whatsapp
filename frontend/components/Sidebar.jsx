@@ -17,21 +17,21 @@ const Sidebar = ({ contacts, activeContact, onSelectContact }) => {
     return (
         <div className="w-[420px] h-full bg-[#111113] border-r border-white/5 flex flex-col overflow-hidden">
             {/* Brand Header */}
-            <div className="px-8 py-8">
-                <div className="flex items-center justify-between mb-2">
-                    <div className="flex items-center space-x-3">
-                        <div className="w-10 h-10 rounded-xl abelops-gradient flex items-center justify-center shadow-lg shadow-blue-500/20">
+            <div className="px-8 pt-10 pb-6 flex-shrink-0">
+                <div className="flex items-center justify-between">
+                    <div className="flex items-center space-x-4">
+                        <div className="w-12 h-12 rounded-2xl abelops-gradient flex items-center justify-center shadow-lg shadow-blue-500/20 flex-shrink-0">
                             <Activity className="text-white" size={24} />
                         </div>
-                        <div>
-                            <h1 className="text-xl font-bold text-white tracking-tight">Abelops Bot</h1>
+                        <div className="flex flex-col">
+                            <h1 className="text-xl font-bold text-white tracking-tight leading-none mb-1">Abelops Bot</h1>
                             <div className="flex items-center space-x-2">
-                                <span className="w-2 h-2 rounded-full bg-green-500 animate-pulse"></span>
+                                <span className="w-1.5 h-1.5 rounded-full bg-green-500 animate-pulse"></span>
                                 <span className="text-[10px] text-zinc-500 uppercase font-black tracking-widest">System Online</span>
                             </div>
                         </div>
                     </div>
-                    <button className="p-2 hover:bg-white/5 rounded-xl transition-colors text-zinc-400">
+                    <button className="p-2.5 hover:bg-white/5 rounded-xl transition-colors text-zinc-500 hover:text-white">
                         <Plus size={22} />
                     </button>
                 </div>

@@ -58,18 +58,18 @@ const ChatWindow = ({ activeContact, messages, addMessage }) => {
                     <p className="text-zinc-500 max-w-sm mx-auto leading-relaxed mb-12">
                         Select a conversation to monitor AI interactions and manage your customer engagement in real-time.
                     </p>
-                    <div className="flex items-center justify-center space-x-12">
-                        <div className="flex flex-col items-center space-y-2">
-                            <div className="p-3 bg-white/5 rounded-2xl border border-white/5">
-                                <Zap size={20} className="text-blue-500" />
+                    <div className="flex items-center justify-center space-x-16 mt-6">
+                        <div className="flex flex-col items-center">
+                            <div className="p-4 bg-white/5 rounded-2xl border border-white/5 mb-3">
+                                <Zap size={24} className="text-blue-500" />
                             </div>
-                            <span className="text-[10px] uppercase font-black text-zinc-500 tracking-widest">Ultra-Fast</span>
+                            <span className="text-[10px] uppercase font-black text-zinc-600 tracking-[0.3em]">Ultra-Fast</span>
                         </div>
-                        <div className="flex flex-col items-center space-y-2">
-                            <div className="p-3 bg-white/5 rounded-2xl border border-white/5">
-                                <Shield size={20} className="text-emerald-500" />
+                        <div className="flex flex-col items-center">
+                            <div className="p-4 bg-white/5 rounded-2xl border border-white/5 mb-3">
+                                <Shield size={24} className="text-emerald-500" />
                             </div>
-                            <span className="text-[10px] uppercase font-black text-zinc-500 tracking-widest">Secure</span>
+                            <span className="text-[10px] uppercase font-black text-zinc-600 tracking-[0.3em]">Secured</span>
                         </div>
                     </div>
                 </motion.div>

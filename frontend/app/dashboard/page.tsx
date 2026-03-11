@@ -76,12 +76,12 @@ export default function DashboardPage() {
     };
 
     return (
-        <div className="flex h-screen bg-[#0f172a] overflow-hidden font-outfit" data-theme="dark">
+        <div className="flex h-screen bg-[#09090b] overflow-hidden selection:bg-blue-500/30">
             <motion.div 
-                initial={{ x: -300, opacity: 0 }}
+                initial={{ x: -20, opacity: 0 }}
                 animate={{ x: 0, opacity: 1 }}
-                transition={{ duration: 0.8, ease: "easeOut" }}
-                className="h-full z-10"
+                transition={{ duration: 0.5, ease: "easeOut" }}
+                className="h-full z-10 flex-shrink-0"
             >
                 <Sidebar
                     contacts={contacts}
@@ -94,7 +94,7 @@ export default function DashboardPage() {
                 className="flex-1 h-full relative"
                 initial={{ opacity: 0 }}
                 animate={{ opacity: 1 }}
-                transition={{ duration: 1 }}
+                transition={{ duration: 0.8 }}
             >
                 <ChatWindow
                     activeContact={activeContact}
