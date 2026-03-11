@@ -5,17 +5,13 @@ require('dotenv').config();
 
 const rawUrl = process.env.DATABASE_URL || '';
 
-// Robust URL formatting for Railway Public Proxy
-let connectionUrl = rawUrl;
-if (!connectionUrl.includes('sslmode')) {
-  connectionUrl += (connectionUrl.includes('?') ? '&' : '?') + 'sslmode=no-verify';
-}
-if (!connectionUrl.includes('connect_timeout')) {
-  connectionUrl += '&connect_timeout=30';
-}
+// Clear the URL of any manual params to avoid conflicts
+const connectionString = rawUrl.split('?')[0];
 
 const pool = new Pool({
-  connectionString: connectionUrl,
+  connectionString: connectionString,
+  // Standard Railway Public SSL configuration
+  ssl: rawUrl.includes('rlwy.net') ? { rejectUnauthorized: false } : false,
   max: 10,
   idleTimeoutMillis: 30000,
   connectionTimeoutMillis: 10000,
@@ -30,18 +26,22 @@ async function connectWithRetry(retries = 5) {
     return;
   }
   
-  const maskedUrl = connectionUrl.replace(/:\/\/.*@/, '://****:****@');
-  console.log(`📡 JS Adapter connecting to: ${maskedUrl}`);
+  const maskedUrl = connectionString.replace(/:\/\/.*@/, '://****:****@');
+  console.log(`📡 Connecting to Public Proxy: ${maskedUrl}`);
 
   for (let i = 0; i < retries; i++) {
     try {
-      // With the adapter, we can check the pool connection directly
-      await pool.query('SELECT 1');
+      const client = await pool.connect();
+      await client.query('SELECT 1');
+      client.release();
       console.log('✅ JS Adapter: Successfully reached Database via Proxy');
       return;
     } catch (err) {
-      console.error(`❌ Attempt ${i + 1} failed:`, err.message);
-      if (i === retries - 1) process.exit(1);
+      console.error(`❌ Attempt ${i + 1} failed (${err.code || 'No Code'}):`, err.message);
+      if (i === retries - 1) {
+        console.error('💡 TIP: Go to your Database Service -> Settings and ensure "Public Networking" is ENABLED.');
+        process.exit(1);
+      }
       await new Promise(res => setTimeout(res, 5000));
     }
   }
