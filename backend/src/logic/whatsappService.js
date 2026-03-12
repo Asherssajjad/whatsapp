@@ -3,7 +3,7 @@ require('dotenv').config();
 
 const PHONE_NUMBER_ID = process.env.PHONE_NUMBER_ID;
 const ACCESS_TOKEN = process.env.ACCESS_TOKEN;
-const API_VERSION = 'v22.0';
+const API_VERSION = 'v21.0';
 
 const sendMessage = async (to, messageText) => {
     const url = `https://graph.facebook.com/${API_VERSION}/${PHONE_NUMBER_ID}/messages`;
@@ -13,7 +13,7 @@ const sendMessage = async (to, messageText) => {
             url,
             {
                 messaging_product: 'whatsapp',
-                to,
+                to: String(to), // Ensure to is a string
                 type: 'text',
                 text: { body: messageText },
             },
@@ -27,8 +27,15 @@ const sendMessage = async (to, messageText) => {
 
         return response.data;
     } catch (error) {
-        console.error('Error sending WhatsApp message:', error.response?.data || error.message);
-        throw new Error('Failed to send WhatsApp message');
+        if (error.response) {
+            console.error('------------------------------------------------------------');
+            console.error('[Abelops WhatsApp] Meta API Detailed Error:');
+            console.error(JSON.stringify(error.response.data, null, 2));
+            console.error('------------------------------------------------------------');
+        } else {
+            console.error('[Abelops WhatsApp] Error:', error.message);
+        }
+        throw error; // Re-throw to be caught by the controller
     }
 };
 
