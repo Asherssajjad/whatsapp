@@ -1,8 +1,8 @@
 const axios = require('axios');
 require('dotenv').config();
 
-const PHONE_NUMBER_ID = process.env.PHONE_NUMBER_ID;
-const ACCESS_TOKEN = process.env.ACCESS_TOKEN;
+const PHONE_NUMBER_ID = process.env.PHONE_NUMBER_ID?.trim();
+const ACCESS_TOKEN = process.env.ACCESS_TOKEN?.trim();
 const API_VERSION = 'v21.0';
 
 const sendMessage = async (to, messageText) => {
