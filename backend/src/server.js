@@ -34,7 +34,9 @@ const seedSystem = async () => {
                     name: 'System Admin'
                 }
             });
-            console.log(`[Seed] Admin user ${adminEmail} created.`);
+            console.log(`[Seed] ✅ Admin user ${adminEmail} created.`);
+        } else {
+            console.log(`[Seed] Admin user ${adminEmail} verified.`);
         }
 
         // 2. Seed Primary Organization (from ENV)
@@ -52,7 +54,7 @@ const seedSystem = async () => {
                         message_limit: 5000
                     }
                 });
-                console.log(`[Seed] Primary Organization created for ID: ${primaryPhoneId}`);
+                console.log(`[Seed] ✅ Primary Organization created for ID: ${primaryPhoneId}`);
             }
 
             // Bind admin to this org if not bound
@@ -63,10 +65,13 @@ const seedSystem = async () => {
                 });
             }
         }
+        console.log('[System] 🚀 Infrastructure Verification Complete.');
     } catch (err) {
-        console.error('[Seed] Critical Error during infrastructure check:', err.message);
+        console.error('[Seed] ❌ Connection failed. Retrying in 10s...', err.message);
+        setTimeout(seedSystem, 10000);
     }
 };
+
 
 
 const PORT = process.env.PORT || 5000;

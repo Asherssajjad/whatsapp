@@ -23,8 +23,10 @@ export default function LoginPage() {
             await login(email, password);
             router.push('/dashboard');
         } catch (err: any) {
-            setError(err.response?.data?.error || 'Invalid credentials');
-        } finally {
+            const errorDetail = err.response?.data?.error || err.response?.data?.message || err.message;
+            setError(errorDetail === 'Network Error' ? 'Backend unreachable. Check deployment status.' : errorDetail);
+        }
+ finally {
             setLoading(false);
         }
     };
