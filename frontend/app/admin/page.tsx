@@ -106,17 +106,37 @@ export default function AdminPage() {
                         <ArrowLeft size={20} className="group-hover:-translate-x-1 transition-transform" />
                     </button>
                     <div>
-                        <h1 className="text-xl font-bold text-white tracking-tight">System Authority</h1>
-                        <p className="text-[10px] uppercase font-black text-blue-500 tracking-[0.2em]">Management Console</p>
+                        <h1 className="text-xl font-bold text-white tracking-tight">Engine Authority</h1>
+                        <p className="text-[10px] uppercase font-black text-blue-500 tracking-[0.2em]">Core System Configuration</p>
                     </div>
                 </div>
                 <div className="flex items-center space-x-4">
+                    <button 
+                        onClick={() => {
+                            const primary = organizations.find(o => o.name === 'Primary Bot' || o.id === JSON.parse(localStorage.getItem('user') || '{}').organization_id);
+                            if (primary) {
+                                setSelectedOrg(primary);
+                                setOrgForm({
+                                    name: primary.name,
+                                    whatsapp_phone_id: primary.whatsapp_phone_id,
+                                    whatsapp_token: primary.whatsapp_token,
+                                    openai_token: primary.openai_token || '',
+                                    message_limit: primary.message_limit
+                                });
+                                setIsOrgModalOpen(true);
+                            }
+                        }}
+                        className="bg-white/5 hover:bg-white/10 text-white px-6 py-3 rounded-2xl text-xs font-bold border border-white/5 transition-all flex items-center space-x-2"
+                    >
+                        <Settings size={16} className="text-blue-500" />
+                        <span>Engine Setup</span>
+                    </button>
                     <button 
                         onClick={() => setIsOrgModalOpen(true)}
                         className="bg-blue-600 hover:bg-blue-500 text-white px-6 py-3 rounded-2xl text-xs font-bold flex items-center space-x-2 transition-all shadow-lg shadow-blue-500/20"
                     >
                         <Plus size={16} />
-                        <span>Create Client</span>
+                        <span>Add Client</span>
                     </button>
                     <button 
                         onClick={() => setIsUserModalOpen(true)}
@@ -124,18 +144,19 @@ export default function AdminPage() {
                     >
                         <span>Add Operator</span>
                     </button>
+
                 </div>
             </header>
 
             <main className="p-12 max-w-[1400px] mx-auto">
-                {/* Stats */}
                 <div className="grid grid-cols-4 gap-6 mb-12">
                     {[
-                        { label: 'Active Clients', value: organizations.length, icon: Users, color: 'text-blue-500' },
-                        { label: 'Total Engagement', value: organizations.reduce((acc, o) => acc + (o._count?.messages || 0), 0), icon: BarChart3, color: 'text-emerald-500' },
-                        { label: 'System Uptime', value: '99.9%', icon: Zap, color: 'text-amber-500' },
-                        { label: 'Security Level', value: 'Elite', icon: Shield, color: 'text-indigo-500' },
+                        { label: 'Network Operations', value: organizations.length, icon: LayoutDashboard, color: 'text-blue-500' },
+                        { label: 'System Engagement', value: organizations.reduce((acc, o) => acc + (o._count?.messages || 0), 0), icon: BarChart3, color: 'text-emerald-500' },
+                        { label: 'Engine Health', value: 'Prime', icon: Zap, color: 'text-amber-500' },
+                        { label: 'Auth Level', value: 'Root', icon: Shield, color: 'text-indigo-500' },
                     ].map((stat, i) => (
+
                         <motion.div 
                             key={i}
                             initial={{ opacity: 0, y: 20 }}
