@@ -48,16 +48,23 @@ const handleIncomingMessage = async (req, res) => {
 
             try {
                 // Find Organization
-                const organization = await prisma.organization.findUnique({
+                let organization = await prisma.organization.findUnique({
                     where: { whatsapp_phone_id: recipientPhoneId }
                 });
 
                 if (!organization) {
-                    console.error(`[Abelops] No organization found for Phone ID: ${recipientPhoneId}`);
-                    return res.sendStatus(404);
+                    console.warn(`[Abelops] No organization found for Phone ID: ${recipientPhoneId}. Using fallback mechanism.`);
+                    // Try to find the first organization as a catch-all
+                    organization = await prisma.organization.findFirst();
+                    
+                    if (!organization) {
+                        console.error('[Abelops] ❌ CRITICAL: No organization found in DB. Webhook execution aborted.');
+                        return res.sendStatus(404);
+                    }
                 }
 
                 const orgId = organization.id;
+
 
                 // Find or create contact
                 let contact = await prisma.contact.findFirst({ 

@@ -6,6 +6,7 @@ const JWT_SECRET = process.env.JWT_SECRET || 'abelops_secret_key_2026';
 
 const login = async (req, res) => {
     const { email, password } = req.body;
+    console.log(`[Auth] Login attempt for: ${email}`);
 
     try {
         const user = await prisma.user.findUnique({
@@ -14,8 +15,12 @@ const login = async (req, res) => {
         });
 
         if (!user) {
+            console.warn(`[Auth] User not found: ${email}`);
             return res.status(401).json({ error: 'Invalid email or password' });
         }
+
+        console.log(`[Auth] User found, checking password for: ${email}`);
+
 
         const isPasswordValid = await bcrypt.compare(password, user.password);
 
