@@ -108,6 +108,17 @@ const Sidebar = ({ contacts, activeContact, onSelectContact }) => {
                                     {contact.last_message_time ? format(new Date(contact.last_message_time), 'HH:mm') : ''}
                                 </span>
                             </div>
+                            {contact.organization && (
+                                <p className="text-[9px] font-black text-blue-500/80 uppercase tracking-widest mb-1">
+                                    {contact.organization.name}
+                                </p>
+                            )}
+                            {!contact.organization && contact.organization_name && (
+                                <p className="text-[9px] font-black text-blue-500/80 uppercase tracking-widest mb-1">
+                                    {contact.organization_name}
+                                </p>
+                            )}
+
                             <div className="flex items-center text-[13px] text-zinc-500 truncate font-light">
                                 {!contact.unread_count && (
                                     <CheckCheck size={14} className="mr-1 text-blue-500/50" />

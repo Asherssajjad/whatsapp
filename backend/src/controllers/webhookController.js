@@ -122,9 +122,13 @@ const handleIncomingMessage = async (req, res) => {
 
                 // Emit real-time message via socket.io
                 io.emit('new_message', {
-                    contact,
+                    contact: {
+                        ...contact,
+                        organization_name: organization.name
+                    },
                     message: newMessage,
                 });
+
 
                 // AI Response Logic (Check if auto-reply is enabled)
                 if (conversation.ai_reply_enabled) {
