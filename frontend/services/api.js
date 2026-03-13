@@ -23,7 +23,10 @@ api.interceptors.request.use((config) => {
 
 export const getContacts = () => api.get('/contacts');
 export const getMessages = (phoneNumber) => api.get(`/messages/${phoneNumber}`);
+export const getAdminContacts = () => api.get('/admin/contacts');
+export const getAdminMessages = (phoneNumber) => api.get(`/admin/messages/${phoneNumber}`);
 export const sendManualMessage = (phoneNumber, message) =>
     api.post('/send', { phone_number: phoneNumber, message });
+
 
 export default api;

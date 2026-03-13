@@ -4,7 +4,7 @@ import React, { useState, useEffect } from 'react';
 import Sidebar from '../../components/Sidebar';
 import ChatWindow from '../../components/ChatWindow';
 import socket from '../../services/socket';
-import { getContacts, getMessages } from '../../services/api';
+import api, { getContacts, getMessages } from '../../services/api';
 import { motion } from 'framer-motion';
 
 export default function DashboardPage() {
@@ -27,13 +27,16 @@ export default function DashboardPage() {
 
         const fetchContacts = async () => {
             try {
-                const response = await getContacts();
+                const response = parsedUser.role === 'ADMIN' 
+                    ? await api.get('/admin/contacts') 
+                    : await api.get('/contacts');
                 setContacts(response.data);
             } catch (err) {
                 console.error('Failed to fetch contacts:', err);
             }
         };
         fetchContacts();
+
 
         socket.on('new_message', (data) => {
             setContacts((prev) => {
@@ -70,7 +73,9 @@ export default function DashboardPage() {
         if (activeContact) {
             const fetchMessages = async () => {
                 try {
-                    const response = await getMessages(activeContact.phone_number);
+                    const response = user.role === 'ADMIN'
+                        ? await api.get(`/admin/messages/${activeContact.phone_number}`)
+                        : await api.get(`/messages/${activeContact.phone_number}`);
                     setMessages(response.data);
                     setContacts((prev) => prev.map((c) =>
                         c.phone_number === activeContact.phone_number ? { ...c, unread_count: 0 } : c
@@ -79,6 +84,7 @@ export default function DashboardPage() {
                     console.error('Failed to fetch messages:', err);
                 }
             };
+
             fetchMessages();
         }
     }, [activeContact]);

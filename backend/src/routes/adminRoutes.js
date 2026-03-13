@@ -5,7 +5,9 @@ const {
     createOrganization, 
     updateOrganization, 
     createUser, 
-    getOrganizations 
+    getOrganizations,
+    getAdminContacts,
+    getAdminMessages
 } = require('../controllers/adminController');
 
 // All routes here require admin privileges
@@ -16,5 +18,8 @@ router.post('/organizations', createOrganization);
 router.put('/organizations/:id', updateOrganization);
 router.get('/organizations', getOrganizations);
 router.post('/users', createUser);
+router.get('/contacts', getAdminContacts);
+router.get('/messages/:phone_number', getAdminMessages);
 
 module.exports = router;
+

@@ -73,9 +73,40 @@ const getOrganizations = async (req, res) => {
     }
 };
 
+const getAdminContacts = async (req, res) => {
+    try {
+        const contacts = await prisma.contact.findMany({
+            include: { organization: true },
+            orderBy: { last_message_time: 'desc' }
+        });
+        res.status(200).json(contacts);
+    } catch (err) {
+        console.error('Error fetching admin contacts:', err);
+        res.status(500).json({ error: 'Failed to fetch contacts' });
+    }
+};
+
+const getAdminMessages = async (req, res) => {
+    const { phone_number } = req.params;
+    try {
+        const messages = await prisma.message.findMany({
+            where: { phone_number },
+            include: { organization: true },
+            orderBy: { timestamp: 'asc' }
+        });
+        res.status(200).json(messages);
+    } catch (err) {
+        console.error('Error fetching admin messages:', err);
+        res.status(500).json({ error: 'Failed to fetch messages' });
+    }
+};
+
 module.exports = {
     createOrganization,
     updateOrganization,
     createUser,
-    getOrganizations
+    getOrganizations,
+    getAdminContacts,
+    getAdminMessages
 };
+
