@@ -11,8 +11,20 @@ export default function DashboardPage() {
     const [contacts, setContacts] = useState<any[]>([]);
     const [activeContact, setActiveContact] = useState<any>(null);
     const [messages, setMessages] = useState<any[]>([]);
+    const [user, setUser] = useState<any>(null);
 
     useEffect(() => {
+        const token = localStorage.getItem('token');
+        const storedUser = localStorage.getItem('user');
+        
+        if (!token || !storedUser) {
+            window.location.href = '/login';
+            return;
+        }
+        
+        const parsedUser = JSON.parse(storedUser);
+        setUser(parsedUser);
+
         const fetchContacts = async () => {
             try {
                 const response = await getContacts();

@@ -17,14 +17,19 @@ if (!process.env.DATABASE_URL) {
 
 const webhookRoutes = require('./routes/webhookRoutes');
 const chatRoutes = require('./routes/chatRoutes');
+const authRoutes = require('./routes/authRoutes');
+const adminRoutes = require('./routes/adminRoutes');
 
 // Check Routes
 app.get('/status', (req, res) => {
-    res.send({ status: 'OK', message: 'WhatsApp AI Dashboard Backend is running.' });
+    res.send({ status: 'OK', message: 'Abelops Intelligence Backend is running.' });
 });
 
 // Use Routes
+app.use('/auth', authRoutes);
 app.use('/webhook', webhookRoutes);
 app.use('/api', chatRoutes);
+app.use('/api/admin', adminRoutes);
 
 module.exports = app;
+

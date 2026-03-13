@@ -101,8 +101,9 @@ const Sidebar = ({ contacts, activeContact, onSelectContact }) => {
                                 <span className={`font-semibold text-base truncate transition-colors ${
                                     activeContact?.phone_number === contact.phone_number ? 'text-white' : 'text-zinc-200 group-hover:text-blue-400'
                                 }`}>
-                                    {contact.name || contact.phone_number}
+                                    {(contact.name && contact.name !== 'Unknown') ? contact.name : `+${contact.phone_number}`}
                                 </span>
+
                                 <span className="text-[10px] text-zinc-500 font-bold uppercase tracking-widest pl-2">
                                     {contact.last_message_time ? format(new Date(contact.last_message_time), 'HH:mm') : ''}
                                 </span>
@@ -121,20 +122,44 @@ const Sidebar = ({ contacts, activeContact, onSelectContact }) => {
             {/* Profile Footer */}
             <div className="p-6 bg-white/[0.02] border-t border-white/5">
                 <div className="flex items-center justify-between">
-                    <div className="flex items-center space-x-3">
-                        <div className="w-10 h-10 rounded-xl bg-zinc-800 flex items-center justify-center p-0.5 border border-white/5">
-                            <img src="https://ui-avatars.com/api/?name=Admin&background=3b82f6&color=fff" className="rounded-lg" alt="admin" />
+                    <div className="flex items-center space-x-3 overflow-hidden">
+                        <div className="w-10 h-10 rounded-xl bg-zinc-800 flex items-center justify-center p-0.5 border border-white/5 overflow-hidden flex-shrink-0">
+                             <Users size={20} className="text-zinc-500" />
                         </div>
-                        <div>
-                            <p className="text-sm font-bold text-white leading-tight">System Admin</p>
-                            <p className="text-[10px] text-zinc-500 uppercase tracking-tighter">Root Authority</p>
+                        <div className="overflow-hidden">
+                            <p className="text-sm font-bold text-white leading-tight truncate">
+                                {typeof window !== 'undefined' ? (JSON.parse(localStorage.getItem('user') || '{}').name || 'Operator') : 'Operator'}
+                            </p>
+                            <p className="text-[10px] text-zinc-500 uppercase tracking-tighter truncate">
+                                {typeof window !== 'undefined' ? (JSON.parse(localStorage.getItem('user') || '{}').role || 'System') : 'System'}
+                            </p>
                         </div>
                     </div>
-                    <button className="p-2 hover:bg-white/5 rounded-xl transition-colors text-zinc-500 hover:text-white">
-                        <Settings size={20} />
-                    </button>
+                    <div className="flex items-center space-x-1">
+                        {typeof window !== 'undefined' && JSON.parse(localStorage.getItem('user') || '{}').role === 'ADMIN' && (
+                            <button 
+                                onClick={() => window.location.href = '/admin'}
+                                className="p-2 hover:bg-white/5 rounded-xl transition-colors text-zinc-500 hover:text-white"
+                                title="Admin Settings"
+                            >
+                                <Settings size={20} />
+                            </button>
+                        )}
+                        <button 
+                            onClick={() => {
+                                localStorage.removeItem('token');
+                                localStorage.removeItem('user');
+                                window.location.href = '/login';
+                            }}
+                            className="p-2 hover:bg-red-500/10 rounded-xl transition-colors text-zinc-500 hover:text-red-500"
+                            title="Logout"
+                        >
+                            <Activity size={20} className="rotate-90" />
+                        </button>
+                    </div>
                 </div>
             </div>
+
         </div>
     );
 };

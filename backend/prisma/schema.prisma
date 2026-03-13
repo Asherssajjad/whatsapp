@@ -7,6 +7,24 @@ datasource db {
   url      = env("DATABASE_URL")
 }
 
+enum Role {
+  ADMIN
+  USER
+}
+
+model User {
+  id              String        @id @default(uuid())
+  email           String        @unique
+  name            String?
+  password        String
+  role            Role          @default(USER)
+  organization_id String?
+  organization    Organization? @relation(fields: [organization_id], references: [id])
+  createdAt       DateTime      @default(now())
+  updatedAt       DateTime      @updatedAt
+}
+
+
 model Organization {
   id                    String         @id @default(uuid())
   name                  String
@@ -14,9 +32,12 @@ model Organization {
   whatsapp_token        String
   whatsapp_verify_token String         @default("abelops_verify")
   openai_token          String?
+  message_limit         Int            @default(1000)
+  message_count         Int            @default(0)
   contacts              Contact[]
   conversations         Conversation[]
   messages              Message[]
+  users                 User[]
   createdAt             DateTime       @default(now())
   updatedAt             DateTime       @updatedAt
 }
@@ -24,7 +45,7 @@ model Organization {
 model Contact {
   id                String       @id @default(uuid())
   phone_number      String       @unique
-  name              String       @default("Unknown")
+  name              String?
   avatar            String       @default("")
   last_message      String       @default("")
   last_message_time DateTime     @default(now())
@@ -34,6 +55,7 @@ model Contact {
   createdAt         DateTime     @default(now())
   updatedAt         DateTime     @updatedAt
 }
+
 
 model Conversation {
   id                String       @id @default(uuid())

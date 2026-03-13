@@ -35,14 +35,16 @@ const handleIncomingMessage = async (req, res) => {
             const changes = body.entry[0].changes[0].value;
             const messageData = changes.messages[0];
             const metadata = changes.metadata;
+            const contactProfile = changes.contacts ? changes.contacts[0] : null;
             
             const from = messageData.from; // Sender's phone number
-            const text = messageData.text.body;
+            const contactName = contactProfile ? contactProfile.profile.name : null;
+            const text = messageData.text?.body || "Non-text message";
             const messageId = messageData.id;
             const timestamp = messageData.timestamp;
             const recipientPhoneId = metadata.phone_number_id;
 
-            console.log(`New Message from ${from} to ${recipientPhoneId}: ${text}`);
+            console.log(`New Message from ${from} (${contactName || 'No Name'}) to ${recipientPhoneId}: ${text}`);
 
             try {
                 // Find Organization
@@ -66,6 +68,7 @@ const handleIncomingMessage = async (req, res) => {
                     contact = await prisma.contact.create({
                         data: {
                             phone_number: from,
+                            name: contactName,
                             last_message: text,
                             last_message_time: new Date(),
                             organization_id: orgId
@@ -75,12 +78,14 @@ const handleIncomingMessage = async (req, res) => {
                     contact = await prisma.contact.update({
                         where: { id: contact.id },
                         data: {
+                            name: contactName || contact.name, // Only update if we got a new name
                             last_message: text,
                             last_message_time: new Date(),
                             unread_count: { increment: 1 }
                         }
                     });
                 }
+
 
                 // Find or create conversation
                 let conversation = await prisma.conversation.findFirst({

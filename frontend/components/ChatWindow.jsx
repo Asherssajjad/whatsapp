@@ -94,8 +94,9 @@ const ChatWindow = ({ activeContact, messages, addMessage }) => {
                     </div>
                     <div className="ml-4">
                         <h3 className="text-white text-lg font-bold leading-tight">
-                            {activeContact.name || activeContact.phone_number}
+                            {(activeContact.name && activeContact.name !== 'Unknown') ? activeContact.name : `+${activeContact.phone_number}`}
                         </h3>
+
                         <div className="flex items-center space-x-2">
                             <span className="text-[11px] text-emerald-500 font-bold uppercase tracking-wider">Live Active</span>
                             <span className="text-zinc-600">•</span>
