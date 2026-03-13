@@ -7,27 +7,45 @@ datasource db {
   url      = env("DATABASE_URL")
 }
 
+model Organization {
+  id                    String         @id @default(uuid())
+  name                  String
+  whatsapp_phone_id     String         @unique
+  whatsapp_token        String
+  whatsapp_verify_token String         @default("abelops_verify")
+  openai_token          String?
+  contacts              Contact[]
+  conversations         Conversation[]
+  messages              Message[]
+  createdAt             DateTime       @default(now())
+  updatedAt             DateTime       @updatedAt
+}
+
 model Contact {
-  id                String   @id @default(uuid())
-  phone_number      String   @unique
-  name              String   @default("Unknown")
-  avatar            String   @default("")
-  last_message      String   @default("")
-  last_message_time DateTime @default(now())
-  unread_count      Int      @default(0)
-  createdAt         DateTime @default(now())
-  updatedAt         DateTime @updatedAt
+  id                String       @id @default(uuid())
+  phone_number      String       @unique
+  name              String       @default("Unknown")
+  avatar            String       @default("")
+  last_message      String       @default("")
+  last_message_time DateTime     @default(now())
+  unread_count      Int          @default(0)
+  organization_id   String?
+  organization      Organization? @relation(fields: [organization_id], references: [id])
+  createdAt         DateTime     @default(now())
+  updatedAt         DateTime     @updatedAt
 }
 
 model Conversation {
-  id                String   @id @default(uuid())
+  id                String       @id @default(uuid())
   phone_number      String
-  ai_reply_enabled  Boolean  @default(true)
-  last_interaction DateTime @default(now())
-  status            String   @default("active")
+  ai_reply_enabled  Boolean      @default(true)
+  last_interaction  DateTime     @default(now())
+  status            String       @default("active")
+  organization_id   String?
+  organization      Organization? @relation(fields: [organization_id], references: [id])
   messages          Message[]
-  createdAt         DateTime @default(now())
-  updatedAt         DateTime @updatedAt
+  createdAt         DateTime     @default(now())
+  updatedAt         DateTime     @updatedAt
 }
 
 model Message {
@@ -39,6 +57,9 @@ model Message {
   timestamp       DateTime      @default(now())
   conversation_id String?
   conversation    Conversation? @relation(fields: [conversation_id], references: [id])
+  organization_id String?
+  organization    Organization? @relation(fields: [organization_id], references: [id])
   createdAt       DateTime      @default(now())
   updatedAt       DateTime      @updatedAt
 }
+

@@ -12,9 +12,14 @@ const getOpenAIClient = () => {
     return openai;
 };
 
-const getAIResponse = async (userMessage) => {
+const getAIResponse = async (userMessage, orgApiKey) => {
     try {
-        const client = getOpenAIClient();
+        let client;
+        if (orgApiKey) {
+            client = new OpenAI({ apiKey: orgApiKey });
+        } else {
+            client = getOpenAIClient();
+        }
         
         // Dynamically get the current time in Pakistan (PKT is UTC+5)
         const now = new Date();
@@ -47,6 +52,7 @@ const getAIResponse = async (userMessage) => {
         return 'Abelops Intelligence is currently undergoing a logic update. Please stand by.';
     }
 };
+
 
 module.exports = {
     getAIResponse,

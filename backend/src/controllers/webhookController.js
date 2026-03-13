@@ -32,28 +32,48 @@ const handleIncomingMessage = async (req, res) => {
             body.entry[0].changes[0].value.messages &&
             body.entry[0].changes[0].value.messages[0]
         ) {
-            const messageData = body.entry[0].changes[0].value.messages[0];
+            const changes = body.entry[0].changes[0].value;
+            const messageData = changes.messages[0];
+            const metadata = changes.metadata;
+            
             const from = messageData.from; // Sender's phone number
             const text = messageData.text.body;
             const messageId = messageData.id;
             const timestamp = messageData.timestamp;
+            const recipientPhoneId = metadata.phone_number_id;
 
-            console.log(`New Message from ${from}: ${text}`);
+            console.log(`New Message from ${from} to ${recipientPhoneId}: ${text}`);
 
             try {
+                // Find Organization
+                const organization = await prisma.organization.findUnique({
+                    where: { whatsapp_phone_id: recipientPhoneId }
+                });
+
+                if (!organization) {
+                    console.error(`[Abelops] No organization found for Phone ID: ${recipientPhoneId}`);
+                    return res.sendStatus(404);
+                }
+
+                const orgId = organization.id;
+
                 // Find or create contact
-                let contact = await prisma.contact.findUnique({ where: { phone_number: from } });
+                let contact = await prisma.contact.findFirst({ 
+                    where: { phone_number: from, organization_id: orgId } 
+                });
+                
                 if (!contact) {
                     contact = await prisma.contact.create({
                         data: {
                             phone_number: from,
                             last_message: text,
-                            last_message_time: new Date()
+                            last_message_time: new Date(),
+                            organization_id: orgId
                         }
                     });
                 } else {
                     contact = await prisma.contact.update({
-                        where: { phone_number: from },
+                        where: { id: contact.id },
                         data: {
                             last_message: text,
                             last_message_time: new Date(),
@@ -64,11 +84,14 @@ const handleIncomingMessage = async (req, res) => {
 
                 // Find or create conversation
                 let conversation = await prisma.conversation.findFirst({
-                    where: { phone_number: from, status: 'active' }
+                    where: { phone_number: from, status: 'active', organization_id: orgId }
                 });
                 if (!conversation) {
                     conversation = await prisma.conversation.create({
-                        data: { phone_number: from }
+                        data: { 
+                            phone_number: from,
+                            organization_id: orgId
+                        }
                     });
                 }
 
@@ -81,6 +104,7 @@ const handleIncomingMessage = async (req, res) => {
                         message_id: messageId,
                         timestamp: new Date(timestamp * 1000),
                         conversation_id: conversation.id,
+                        organization_id: orgId
                     }
                 });
 
@@ -92,7 +116,7 @@ const handleIncomingMessage = async (req, res) => {
 
                 // AI Response Logic (Check if auto-reply is enabled)
                 if (conversation.ai_reply_enabled) {
-                    await generateAndSendAIReply(from, text, conversation.id, io);
+                    await generateAndSendAIReply(from, text, conversation.id, io, organization);
                 }
 
                 res.status(200).send('EVENT_RECEIVED');
@@ -106,26 +130,34 @@ const handleIncomingMessage = async (req, res) => {
     }
 };
 
-const generateAndSendAIReply = async (from, text, conversationId, io) => {
+const generateAndSendAIReply = async (from, text, conversationId, io, organization) => {
     try {
-        console.log(`[Abelops Engine] Processing AI Request for: ${from}`);
-        const aiResponseText = await getAIResponse(text);
-        console.log(`[Abelops Engine] AI Response Generated: "${aiResponseText}"`);
+        console.log(`[Abelops Engine] Processing AI Request for Org: ${organization.name} (${from})`);
+        
+        // Pass organization specific AI token if present
+        const aiResponseText = await getAIResponse(text, organization.openai_token);
+        console.log(`[Abelops Engine] AI Response Generated for ${organization.name}: "${aiResponseText}"`);
 
         let messageId = `msg_offline_${Date.now()}`;
         let waStatus = 'LOGGED_ONLY';
 
         try {
-            // Attempt to send response via WhatsApp API
-            const waResponse = await sendMessage(from, aiResponseText);
+            // Attempt to send response via WhatsApp API using Org credentials
+            const waResponse = await sendMessage(
+                from, 
+                aiResponseText, 
+                organization.whatsapp_phone_id, 
+                organization.whatsapp_token
+            );
+            
             if (waResponse && waResponse.messages && waResponse.messages[0]) {
                 messageId = waResponse.messages[0].id;
                 waStatus = 'SENT';
-                console.log(`[Abelops Engine] Message sent via WhatsApp successfully.`);
+                console.log(`[Abelops Engine] Message sent via WhatsApp successfully for org ${organization.name}.`);
             }
         } catch (waError) {
             console.error('------------------------------------------------------------');
-            console.error('[Abelops Engine] WHATSAPP API ERROR: Message could not be sent.');
+            console.error(`[Abelops Engine] WHATSAPP API ERROR for Org ${organization.name}: Message could not be sent.`);
             console.error('[Abelops Engine] REASON:', waError.message);
             console.error('[Abelops Engine] ACTION: Falling back to Local Log mode.');
             console.error('[Abelops Engine] AI WOULD HAVE SENT:', aiResponseText);
@@ -142,6 +174,7 @@ const generateAndSendAIReply = async (from, text, conversationId, io) => {
                 message_id: messageId,
                 timestamp: new Date(),
                 conversation_id: conversationId,
+                organization_id: organization.id
             }
         });
 

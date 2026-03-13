@@ -5,8 +5,11 @@ const PHONE_NUMBER_ID = process.env.PHONE_NUMBER_ID?.trim();
 const ACCESS_TOKEN = process.env.ACCESS_TOKEN?.trim();
 const API_VERSION = 'v21.0';
 
-const sendMessage = async (to, messageText) => {
-    const url = `https://graph.facebook.com/${API_VERSION}/${PHONE_NUMBER_ID}/messages`;
+const sendMessage = async (to, messageText, phoneNumberId, accessToken) => {
+    // Falls back to ENV if not provided for backward compatibility during transition
+    const finalPhoneId = phoneNumberId || process.env.PHONE_NUMBER_ID?.trim();
+    const finalToken = accessToken || process.env.ACCESS_TOKEN?.trim();
+    const url = `https://graph.facebook.com/${API_VERSION}/${finalPhoneId}/messages`;
 
     try {
         const response = await axios.post(
@@ -20,7 +23,7 @@ const sendMessage = async (to, messageText) => {
             {
                 headers: {
                     'Content-Type': 'application/json',
-                    Authorization: `Bearer ${ACCESS_TOKEN}`,
+                    Authorization: `Bearer ${finalToken}`,
                 },
             }
         );
@@ -38,6 +41,7 @@ const sendMessage = async (to, messageText) => {
         throw error; // Re-throw to be caught by the controller
     }
 };
+
 
 module.exports = {
     sendMessage,

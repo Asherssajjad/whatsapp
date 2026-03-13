@@ -2,8 +2,11 @@ const prisma = require('../lib/prisma');
 const { sendMessage } = require('../logic/whatsappService');
 
 const getContacts = async (req, res) => {
+    const orgId = req.headers['x-org-id'];
     try {
+        const query = orgId ? { where: { organization_id: orgId } } : {};
         const contacts = await prisma.contact.findMany({
+            ...query,
             orderBy: { last_message_time: 'desc' }
         });
         res.status(200).json(contacts);
@@ -15,9 +18,13 @@ const getContacts = async (req, res) => {
 
 const getMessages = async (req, res) => {
     const { phone_number } = req.params;
+    const orgId = req.headers['x-org-id'];
     try {
+        const query = { phone_number };
+        if (orgId) query.organization_id = orgId;
+        
         const messages = await prisma.message.findMany({
-            where: { phone_number },
+            where: query,
             orderBy: { timestamp: 'asc' }
         });
         res.status(200).json(messages);
@@ -29,27 +36,37 @@ const getMessages = async (req, res) => {
 
 const sendManualMessage = async (req, res) => {
     const { phone_number, message } = req.body;
+    const orgId = req.headers['x-org-id'];
     const io = req.app.get('socketio');
 
-    console.log(`[Abelops Manual] Attempting to send message to ${phone_number}: "${message}"`);
+    console.log(`[Abelops Manual] Attempting to send message to ${phone_number}: "${message}" (Org: ${orgId || 'Default'})`);
 
     let messageId = `manual_offline_${Date.now()}`;
-    let success = true;
+    let organization = null;
+
+    if (orgId) {
+        organization = await prisma.organization.findUnique({ where: { id: orgId } });
+    }
 
     try {
-        const waResponse = await sendMessage(phone_number, message);
+        // Use Org credentials if available, otherwise fallback to ENV via sendMessage's internal logic
+        const waResponse = await sendMessage(
+            phone_number, 
+            message, 
+            organization?.whatsapp_phone_id, 
+            organization?.whatsapp_token
+        );
+        
         if (waResponse && waResponse.messages && waResponse.messages[0]) {
             messageId = waResponse.messages[0].id;
             console.log(`[Abelops Manual] WhatsApp delivery successful.`);
         }
     } catch (err) {
         console.error('------------------------------------------------------------');
-        console.error('[Abelops Manual] WHATSAPP API ERROR: Token likely expired or missing.');
+        console.error('[Abelops Manual] WHATSAPP API ERROR');
         console.error('[Abelops Manual] REASON:', err.message);
         console.error('[Abelops Manual] ACTION: Saving to local DB for Dashboard visibility.');
         console.error('------------------------------------------------------------');
-        // We set success to true because we want to return the saved message to the UI
-        // even if the external WhatsApp delivery failed.
     }
 
     try {
@@ -61,6 +78,7 @@ const sendManualMessage = async (req, res) => {
                 message_type: 'bot',
                 message_id: messageId,
                 timestamp: new Date(),
+                organization_id: orgId || null
             }
         });
 
@@ -75,6 +93,7 @@ const sendManualMessage = async (req, res) => {
         return res.status(500).json({ error: 'Failed to record message in database' });
     }
 };
+
 
 module.exports = {
     getContacts,
