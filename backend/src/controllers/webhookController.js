@@ -67,8 +67,8 @@ const handleIncomingMessage = async (req, res) => {
 
 
                 // Find or create contact
-                let contact = await prisma.contact.findFirst({ 
-                    where: { phone_number: from, organization_id: orgId } 
+                let contact = await prisma.contact.findUnique({ 
+                    where: { phone_number: from } 
                 });
                 
                 if (!contact) {
@@ -85,13 +85,15 @@ const handleIncomingMessage = async (req, res) => {
                     contact = await prisma.contact.update({
                         where: { id: contact.id },
                         data: {
-                            name: contactName || contact.name, // Only update if we got a new name
+                            name: contactName || contact.name,
                             last_message: text,
                             last_message_time: new Date(),
-                            unread_count: { increment: 1 }
+                            unread_count: { increment: 1 },
+                            organization_id: orgId // Ensure it's assigned to the currently responding org
                         }
                     });
                 }
+
 
 
                 // Find or create conversation
