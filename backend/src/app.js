@@ -26,10 +26,11 @@ app.get('/status', (req, res) => {
 });
 
 // Use Routes
-app.use('/auth', authRoutes);
-app.use('/webhook', webhookRoutes);
-app.use('/api', chatRoutes);
+app.use('/webhook', webhookRoutes); // Keep at root for Meta compatibility
+app.use('/api/auth', authRoutes);    // Move under /api/auth for frontend consistency
 app.use('/api/admin', adminRoutes);
+app.use('/api', chatRoutes);
+
 
 module.exports = app;
 
